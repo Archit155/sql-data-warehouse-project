@@ -1,0 +1,104 @@
+-- Loading the data Now 
+CREATE OR ALTER PROCEDURE Bronze.load_Bronze AS
+Begin
+DECLARE @start_time DATETIME , @End_time DATETIME,@Batch_start_time DATETIME , @Batch_End_time DATETIME
+	Begin try
+	set @Batch_start_time = GETDATE();
+		set @start_time = GETDATE();
+			Truncate table Bronze.crm_cust_info;
+			BULK INSERT Bronze.crm_cust_info
+			FROM  'D:\SQL\sql-data-warehouse-project\datasets\source_crm\cust_info.csv'
+			with
+			(
+				FIRSTROW = 2,
+				FIELDTERMINATOR = ',',
+				TABLOCK
+			);
+				set @End_time = GETDATE();
+				PRINT 'LOADING DURATION OF Bronze.crm_cust_info'  + cast(DATEDIFF(second,@start_time,@End_time) as Nvarchar) + 'seconds'
+				PRINT '------------------------------------------------';
+
+					set @start_time = GETDATE();
+			Truncate table Bronze.crm_prd_info;
+			BULK INSERT Bronze.crm_prd_info
+			FROM  'D:\SQL\sql-data-warehouse-project\datasets\source_crm\prd_info.csv'
+			with
+			(
+				FIRSTROW = 2,
+				FIELDTERMINATOR = ',',
+				TABLOCK
+			);
+				set @End_time = GETDATE();
+				PRINT 'LOADING DURATION OF Bronze.crm_cust_info'  + cast(DATEDIFF(second,@start_time,@End_time) as Nvarchar) + 'seconds'
+				PRINT '------------------------------------------------';
+
+				set @start_time = GETDATE();
+			Truncate table Bronze.crm_sales_details
+			BULK INSERT Bronze.crm_sales_details
+			FROM  'D:\SQL\sql-data-warehouse-project\datasets\source_crm\sales_details.csv'
+			with
+			(
+				FIRSTROW = 2,
+				FIELDTERMINATOR = ',',
+				TABLOCK
+			);
+			set @End_time = GETDATE();
+				PRINT 'LOADING DURATION OF Bronze.crm_cust_info'  + cast(DATEDIFF(second,@start_time,@End_time) as Nvarchar) + 'seconds'
+				PRINT '------------------------------------------------';
+
+				set @start_time = GETDATE();
+			Truncate table Bronze.erp_cust_az12
+			BULK INSERT Bronze.erp_cust_az12
+			FROM  'D:\SQL\sql-data-warehouse-project\datasets\source_erp\CUST_AZ12.CSV'
+			with
+			(
+				FIRSTROW = 2,
+				FIELDTERMINATOR = ',',
+				TABLOCK
+			);
+			set @End_time = GETDATE();
+				PRINT 'LOADING DURATION OF Bronze.crm_cust_info'  + cast(DATEDIFF(second,@start_time,@End_time) as Nvarchar) + 'seconds'
+				PRINT '------------------------------------------------';
+
+	set @start_time = GETDATE();
+			Truncate table Bronze.erp_loc_a101
+			BULK INSERT Bronze.erp_loc_a101
+			FROM  'D:\SQL\sql-data-warehouse-project\datasets\source_erp\LOC_A101.CSV'
+			with
+			(
+				FIRSTROW = 2,
+				FIELDTERMINATOR = ',',
+				TABLOCK
+			);
+			set @End_time = GETDATE();
+				PRINT 'LOADING DURATION OF Bronze.crm_cust_info'  + cast(DATEDIFF(second,@start_time,@End_time) as Nvarchar) + 'seconds'
+				PRINT '------------------------------------------------';
+
+				set @start_time = GETDATE();
+			Truncate table Bronze.erp_px_cat_g1V2
+			BULK INSERT Bronze.erp_px_cat_g1V2
+			FROM  'D:\SQL\sql-data-warehouse-project\datasets\source_erp\PX_CAT_G1V2.CSV'
+			with
+			(
+				FIRSTROW = 2,
+				FIELDTERMINATOR = ',',
+				TABLOCK
+			);
+			set @End_time = GETDATE();
+				PRINT 'LOADING DURATION OF Bronze.crm_cust_info'  + cast(DATEDIFF(second,@start_time,@End_time) as Nvarchar) + 'seconds'
+				PRINT '------------------------------------------------';
+		set @Batch_End_time = GETDATE();
+		PRINT 'BRONZE LAYER LOADED COMPLETELY'
+		PRINT 'LOADING DURATION OF BRONZE LAYER : '  + cast(DATEDIFF(second,@Batch_start_time,@Batch_End_time) as Nvarchar) + ' seconds'
+	END TRY
+		BEGIN CATCH
+			PRINT'========================================================='
+					PRINT 'ERROR OCCURRED DURING THE BRONZE LAYER'
+					PRINT 'ERROR MESSAGE' + ERROR_MESSAGE()
+					PRINT 'ERROR NUMBER' + CAST(ERROR_NUMBER() AS NVARCHAR)
+			PRINT'========================================================='
+		END CATCH
+END
+
+exec Bronze.load_bronze
+	
